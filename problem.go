@@ -14,6 +14,14 @@ func (p problem) GoalTest(s state) bool {
 		if !checkslice(row) {
 			return false
 		}
+		col := s.col(i)
+		if !checkslice(col) {
+			return false
+		}
+		box := s.box(i)
+		if !checkslice(box) {
+			return false
+		}
 	}
 	return true
 }
