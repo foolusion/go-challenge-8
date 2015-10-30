@@ -1,11 +1,11 @@
 package main
 
-import "strings"
+import "bytes"
 
-type problem string
+type problem []byte
 
 func (p problem) GoalTest(s state) bool {
-	if strings.Contains(string(s), " ") {
+	if bytes.Contains(s, []byte{'_'}) {
 		return false
 	}
 

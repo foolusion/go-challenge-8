@@ -3,14 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
 )
 
-type state string
+type state []byte
 
-var dict = map[string]int{"1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+var dict = map[byte]int{'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
 
-func ctoi(c string) int {
+func ctoi(c byte) int {
 	v, ok := dict[c]
 	if !ok {
 		return 0
@@ -22,11 +21,7 @@ func (s state) row(num int) []int {
 	row := make([]int, rowLen)
 	start := num * rowLen
 	for i := 0; i < rowLen; i++ {
-		val, err := strconv.Atoi(string(s[start+i]))
-		if err != nil {
-			log.Fatal(err)
-		}
-		row[i] = val
+		row[i] = ctoi(s[start+i])
 	}
 	return row
 }
@@ -34,11 +29,7 @@ func (s state) row(num int) []int {
 func (s state) col(num int) []int {
 	col := make([]int, rowLen)
 	for i := 0; i < rowLen; i++ {
-		val, err := strconv.Atoi(string(s[i*rowLen+num]))
-		if err != nil {
-			log.Fatal(err)
-		}
-		col[i] = val
+		col[i] = ctoi(s[i*rowLen+num])
 	}
 	return col
 }
@@ -68,14 +59,14 @@ func (s state) box(num int) []int {
 		log.Fatal(fmt.Errorf("box: %v is not a valid input. Expected 0-8"))
 	}
 	return []int{
-		ctoi(string(s[0+start])),
-		ctoi(string(s[1+start])),
-		ctoi(string(s[2+start])),
-		ctoi(string(s[9+start])),
-		ctoi(string(s[10+start])),
-		ctoi(string(s[11+start])),
-		ctoi(string(s[18+start])),
-		ctoi(string(s[19+start])),
-		ctoi(string(s[20+start])),
+		ctoi(s[0+start]),
+		ctoi(s[1+start]),
+		ctoi(s[2+start]),
+		ctoi(s[9+start]),
+		ctoi(s[10+start]),
+		ctoi(s[11+start]),
+		ctoi(s[18+start]),
+		ctoi(s[19+start]),
+		ctoi(s[20+start]),
 	}
 }
