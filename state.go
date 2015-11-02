@@ -5,16 +5,37 @@ import (
 	"log"
 )
 
+type cell struct {
+	row int
+	col int
+}
+
+func (c cell) box() int {
+	row := c.row / 3
+	col := c.col / 3
+	return row*3 + col
+}
+
 type state []byte
 
-var dict = map[byte]int{'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+func NewStateFromState(s state) state {
+	n := make(state, len(s))
+	copy(n, s)
+	return n
+}
 
-func ctoi(c byte) int {
-	v, ok := dict[c]
-	if !ok {
-		return 0
+func emptyCells(s state) []cell {
+	cells := make([]cell, 0, 81)
+	for i, v := range s {
+		if v == '_' {
+			c := cell{
+				row: i / rowLen,
+				col: i % rowLen,
+			}
+			cells = append(cells, c)
+		}
 	}
-	return v
+	return cells
 }
 
 func (s state) row(num int) []int {
@@ -69,4 +90,26 @@ func (s state) box(num int) []int {
 		ctoi(s[19+start]),
 		ctoi(s[20+start]),
 	}
+}
+
+func (s state) rowHas(rowNum, value int) bool {
+	return rowColBoxHas(s.row, rowNum, value)
+}
+
+func (s state) colHas(colNum, value int) bool {
+	return rowColBoxHas(s.col, colNum, value)
+}
+
+func (s state) boxHas(boxNum, value int) bool {
+	return rowColBoxHas(s.box, boxNum, value)
+}
+
+func rowColBoxHas(f func(int) []int, num, value int) bool {
+	row := f(num)
+	for _, v := range row {
+		if v == value {
+			return true
+		}
+	}
+	return false
 }
