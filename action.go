@@ -1,11 +1,12 @@
 package main
 
-type action func(state) state
+type action struct {
+	c     cell
+	value int
+}
 
-func actioner(r, c, v int) action {
-	return func(s state) state {
-		res := NewStateFromState(s)
-		res[r*rowLen+c] = itoc(v)
-		return res
-	}
+func (a action) do(s state) state {
+	res := NewStateFromState(s)
+	res[a.c.index()] = itoc(a.value)
+	return res
 }

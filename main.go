@@ -8,14 +8,13 @@ import (
 
 const rowLen = 9
 
-var ctoiDict = map[byte]int{'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+var cellValues = []byte("123456789")
 
 func ctoi(c byte) int {
-	v, ok := ctoiDict[c]
-	if !ok {
-		return 0
+	if c >= '1' && c <= '9' {
+		return int(c - '0')
 	}
-	return v
+	return 0
 }
 
 var itocDict = []byte{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}

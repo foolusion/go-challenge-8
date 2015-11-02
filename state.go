@@ -16,6 +16,10 @@ func (c cell) box() int {
 	return row*3 + col
 }
 
+func (c cell) index() int {
+	return c.row*rowLen + c.col
+}
+
 type state []byte
 
 func NewStateFromState(s state) state {
@@ -90,6 +94,16 @@ func (s state) box(num int) []int {
 		ctoi(s[19+start]),
 		ctoi(s[20+start]),
 	}
+}
+
+func (s state) numPossibleActions(c cell) int {
+	numActions := 0
+	for i := 1; i <= 9; i++ {
+		if !s.rowHas(c.row, i) && !s.colHas(c.col, i) && !s.boxHas(c.box(), i) {
+			numActions++
+		}
+	}
+	return numActions
 }
 
 func (s state) rowHas(rowNum, value int) bool {
