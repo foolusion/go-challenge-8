@@ -1,10 +1,6 @@
 package main
 
-import (
-	"fmt"
-
-	"github.com/davecheney/profile"
-)
+import "fmt"
 
 const rowLen = 9
 
@@ -29,7 +25,10 @@ func itoc(i int) byte {
 }
 
 func boardstring(s state, e error) string {
-	return fmt.Sprintf("%v\n%v\n%v\n%v\n%v\n%v\n%v\n%v\n%v\n", string(s[0:9]), string(s[9:18]), string(s[18:27]), string(s[27:36]), string(s[36:45]), string(s[45:54]), string(s[54:63]), string(s[63:72]), string(s[72:81]))
+	return fmt.Sprintf("%v\n%v\n%v\n%v\n%v\n%v\n%v\n%v\n%v\n",
+		string(s[0:9]), string(s[9:18]), string(s[18:27]), string(s[27:36]),
+		string(s[36:45]), string(s[45:54]), string(s[54:63]), string(s[63:72]),
+		string(s[72:81]))
 }
 
 func cross(a, b []string) []string {
@@ -43,10 +42,13 @@ func cross(a, b []string) []string {
 }
 
 var (
-	digits  = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9"}
-	rows    = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I"}
-	cols    = digits
-	squares = cross(rows, cols)
+	digits   = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9"}
+	rows     = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I"}
+	cols     = digits
+	squares  = cross(rows, cols)
+	unitlist = makeUnitList()
+	units    = makeUnits()
+	peers    = makePeers()
 )
 
 func makeUnitList() [][]string {
@@ -65,27 +67,46 @@ func makeUnitList() [][]string {
 	return unitlist
 }
 
-func main() {
-	defer profile.Start(profile.CPUProfile).Stop()
-
-	unitlist := makeUnitList()
-
-	fmt.Println(unitlist)
-
-	units := make(map[string][]string, len(squares)*10)
+func makeUnits() map[string][][]string {
+	units := make(map[string][][]string, len(squares)*10)
 
 	for _, s := range squares {
 		for _, unit := range unitlist {
 			for _, usq := range unit {
 				if s == usq {
-					units[s] = append(units[s], unit...)
+					units[s] = append(units[s], unit)
 					break
 				}
 			}
 		}
 	}
+	return units
+}
 
-	fmt.Println(units)
+func makePeers() map[string][]string {
+	peers := make(map[string][]string)
+
+	for _, s := range squares {
+		p := make(map[string]struct{})
+		for _, unit := range units[s] {
+			for _, usq := range unit {
+				if s != usq {
+					p[usq] = struct{}{}
+				}
+			}
+		}
+
+		peers[s] = make([]string, 0, 20)
+		for k := range p {
+			peers[s] = append(peers[s], k)
+		}
+	}
+	return peers
+}
+
+func main() {
+	fmt.Println(unitlist)
+	fmt.Println(peers)
 
 	// TODO peers
 
