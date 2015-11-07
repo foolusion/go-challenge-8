@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const rowLen = 9
 
@@ -24,11 +27,31 @@ func itoc(i int) byte {
 	return itocDict[i]
 }
 
-func boardstring(s state, e error) string {
-	return fmt.Sprintf("%v\n%v\n%v\n%v\n%v\n%v\n%v\n%v\n%v\n",
-		string(s[0:9]), string(s[9:18]), string(s[18:27]), string(s[27:36]),
-		string(s[36:45]), string(s[45:54]), string(s[54:63]), string(s[63:72]),
-		string(s[72:81]))
+func printBoard(values nstate) {
+	width := 0
+	for _, s := range squares {
+		if width < len(values[s]) {
+			width = len(values[s])
+		}
+	}
+	width += 1
+	lineSlice := make([]string, 3)
+	for i := 0; i < len(lineSlice); i++ {
+		lineSlice = append(lineSlice, strings.Repeat("-", width*3))
+	}
+	line := strings.Join(lineSlice, "+")
+	for _, r := range rows {
+		for _, c := range cols {
+			fmt.Print(values[r+c])
+			if c == "3" || c == "6" {
+				fmt.Print("|")
+			}
+		}
+		if r == "C" || r == "F" {
+			fmt.Println()
+			fmt.Println(line)
+		}
+	}
 }
 
 func cross(a, b []string) []string {
@@ -105,22 +128,6 @@ func makePeers() map[string][]string {
 }
 
 func main() {
-	fmt.Println(unitlist)
-	fmt.Println(peers)
-
-	// TODO peers
-
-	/*
-		a := problem(
-			"___3_4___" +
-				"_125_834_" +
-				"543671982" +
-				"327156498" +
-				"158942637" +
-				"469783521" +
-				"691835274" +
-				"275419863" +
-				"83426715_")
-		fmt.Println(boardstring(depthLimitedSearch(a, 81)))
-	*/
+	grid1 := "003020600900305001001806400008102900700000008006708200002609500800203009005010300"
+	printBoard(parseGrid(grid1))
 }

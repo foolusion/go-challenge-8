@@ -7,6 +7,7 @@ import (
 
 var (
 	ErrRemovedLastValue = errors.New("Removed last value")
+	ErrNoPlacement      = errors.New("No placement for d") // that's what she said
 )
 
 type nstate map[string]string
@@ -19,21 +20,23 @@ func newStateFrom(s nstate) nstate {
 	return newState
 }
 
-func parseGrid(grid string) {
-	values := make(map[string][]string, 81*2)
+func parseGrid(grid string) nstate {
+	values := make(nstate, 81*2)
 	for _, s := range squares {
-		values[s] = digits
+		values[s] = strings.Join(digits, "")
 	}
 	for s, d := range gridValues(grid) {
 		// TODO: real implementation
 		if s == d {
-			return
+			return values
 		}
 	}
+	return values
 }
 
 func gridValues(grid string) nstate {
 	results := make(nstate, 81*2)
+	// TODO: get values
 	return results
 }
 
@@ -70,6 +73,21 @@ func (n nstate) eliminate(s, d string) error {
 			}
 		}
 	}
-	// TODO: implement the rest
+
+	for _, u := range units[s] {
+		dplaces := make([]string, 20*2)
+		for _, s2 := range u {
+			if n.has(s2, d) {
+				dplaces = append(dplaces, s2)
+			}
+		}
+		if len(dplaces) == 0 {
+			return ErrNoPlacement
+		} else if len(dplaces) == 1 {
+			if err := n.assign(dplaces[0], d); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
