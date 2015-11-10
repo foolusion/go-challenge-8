@@ -35,20 +35,26 @@ func printBoard(values nstate) {
 		}
 	}
 	width += 1
+
 	lineSlice := make([]string, 3)
 	for i := 0; i < len(lineSlice); i++ {
-		lineSlice = append(lineSlice, strings.Repeat("-", width*3))
+		lineSlice[i] = strings.Repeat("-", width*3)
 	}
+
 	line := strings.Join(lineSlice, "+")
+
 	for _, r := range rows {
 		for _, c := range cols {
-			fmt.Print(values[r+c])
+			str := values[r+c]
+			space := strings.Repeat(" ", width-len(str))
+			fmt.Print(str, space)
 			if c == "3" || c == "6" {
 				fmt.Print("|")
 			}
 		}
+		fmt.Println()
+
 		if r == "C" || r == "F" {
-			fmt.Println()
 			fmt.Println(line)
 		}
 	}
@@ -129,5 +135,9 @@ func makePeers() map[string][]string {
 
 func main() {
 	grid1 := "003020600900305001001806400008102900700000008006708200002609500800203009005010300"
-	printBoard(parseGrid(grid1))
+	values, err := parseGrid(grid1)
+	if err != nil {
+		fmt.Println(err)
+	}
+	printBoard(values)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"strings"
+	"unicode"
 )
 
 var (
@@ -20,23 +21,30 @@ func newStateFrom(s nstate) nstate {
 	return newState
 }
 
-func parseGrid(grid string) nstate {
+func parseGrid(grid string) (nstate, error) {
 	values := make(nstate, 81*2)
 	for _, s := range squares {
 		values[s] = strings.Join(digits, "")
 	}
 	for s, d := range gridValues(grid) {
-		// TODO: real implementation
-		if s == d {
-			return values
+		if unicode.IsDigit(d) && d != '0' {
+			if err := values.assign(s, string(d)); err != nil {
+				return values, err
+			}
 		}
 	}
-	return values
+	return values, nil
 }
 
-func gridValues(grid string) nstate {
-	results := make(nstate, 81*2)
-	// TODO: get values
+func gridValues(grid string) map[string]rune {
+	results := make(map[string]rune, 81*2)
+	for i, c := range grid {
+		if unicode.IsDigit(c) {
+			results[squares[i]] = c
+		} else if c == '.' {
+			results[squares[i]] = '0'
+		}
+	}
 	return results
 }
 
