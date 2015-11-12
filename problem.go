@@ -1,56 +1,38 @@
 package main
 
-import "bytes"
+type problem string
 
-type problem []byte
-
-func (p problem) initialState() state {
-	return state(p)
+func (p problem) initialState() (nstate, error) {
+	return parseGrid(p)
 }
 
-func (p problem) actions(s state) []action {
-	// TODO: get all valid actions for the current state.
-	results := []action{}
-	e := emptyCells(s)
-	for _, v := range e {
-		for i := 1; i <= 9; i++ {
-			if s.rowHas(v.row, i) || s.colHas(v.col, i) || s.boxHas(v.box(), i) {
-				continue
+func (p problem) actions(s nstate) []action {
+	actions := make([]action, 0, 20)
+	for sq, vals := range s {
+		if len(vals) > 1 {
+			for _, v := range vals {
+				actions = append(actions, action{square: sq, value: string(v)})
 			}
-			results = append(results, action{c: cell{row: v.row, col: v.col}, value: i})
 		}
 	}
-	return results
+	return actions
 }
 
-func (p problem) GoalTest(s state) bool {
-	if bytes.Contains(s, []byte{'_'}) {
-		return false
-	}
-
-	for i := 0; i < rowLen; i++ {
-		row := s.row(i)
-		if !checkslice(row) {
-			return false
-		}
-		col := s.col(i)
-		if !checkslice(col) {
-			return false
-		}
-		box := s.box(i)
-		if !checkslice(box) {
+func (p problem) GoalTest(s nstate) bool {
+	for sq, vals := range s {
+		if len(vals) > 1 {
 			return false
 		}
 	}
 	return true
 }
 
-func (p problem) Result(s state, a action) state {
+func (p problem) Result(s nstate, a action) (nstate, error) {
 	return a.do(s)
 }
 
-func (p problem) stepCost(s state, a action) int {
-	return s.numPossibleActions(a.c)
+func (p problem) stepCost(s nstate, a action) int {
+	return len(s[a.square])
 }
 
 func checkslice(row []int) bool {

@@ -21,7 +21,7 @@ func newStateFrom(s nstate) nstate {
 	return newState
 }
 
-func parseGrid(grid string) (nstate, error) {
+func parseGrid(grid problem) (nstate, error) {
 	values := make(nstate, 81*2)
 	for _, s := range squares {
 		values[s] = strings.Join(digits, "")
@@ -36,7 +36,7 @@ func parseGrid(grid string) (nstate, error) {
 	return values, nil
 }
 
-func gridValues(grid string) map[string]rune {
+func gridValues(grid problem) map[string]rune {
 	results := make(map[string]rune, 81*2)
 	for i, c := range grid {
 		if unicode.IsDigit(c) {
@@ -83,7 +83,7 @@ func (n nstate) eliminate(s, d string) error {
 	}
 
 	for _, u := range units[s] {
-		dplaces := make([]string, 20*2)
+		dplaces := make([]string, 0, 20*2)
 		for _, s2 := range u {
 			if n.has(s2, d) {
 				dplaces = append(dplaces, s2)

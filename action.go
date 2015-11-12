@@ -1,12 +1,12 @@
 package main
 
 type action struct {
-	c     cell
-	value int
+	square string
+	value  string
 }
 
-func (a action) do(s state) state {
-	res := NewStateFromState(s)
-	res[a.c.index()] = itoc(a.value)
-	return res
+func (a action) do(s nstate) (nstate, error) {
+	res := newStateFrom(s)
+	err := res.assign(a.square, a.value)
+	return res, err
 }
