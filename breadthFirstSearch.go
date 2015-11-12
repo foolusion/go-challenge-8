@@ -6,6 +6,9 @@ import (
 )
 
 func in(a []nstate, v nstate) bool {
+	if len(a) == 0 {
+		return false
+	}
 	for _, state := range a {
 		for _, sq := range squares {
 			if state[sq] != v[sq] {
@@ -14,10 +17,13 @@ func in(a []nstate, v nstate) bool {
 		}
 		return true
 	}
-	return true
+	return false
 }
 
 func stateIn(a []*node, v nstate) bool {
+	if len(a) == 0 {
+		return false
+	}
 	for _, n := range a {
 		for _, sq := range squares {
 			if n.state[sq] != v[sq] {
@@ -26,7 +32,7 @@ func stateIn(a []*node, v nstate) bool {
 		}
 		return true
 	}
-	return true
+	return false
 }
 
 func pop(a []*node) (*node, []*node) {
@@ -58,6 +64,7 @@ func breadthFirstSearch(p problem) (nstate, error) {
 			if err != nil {
 				continue
 			}
+
 			if !in(explored, child.state) && !stateIn(frontier, child.state) {
 				if p.GoalTest(child.state) {
 					return child.state, nil

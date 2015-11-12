@@ -19,7 +19,7 @@ func (p problem) actions(s nstate) []action {
 }
 
 func (p problem) GoalTest(s nstate) bool {
-	for sq, vals := range s {
+	for _, vals := range s {
 		if len(vals) > 1 {
 			return false
 		}
