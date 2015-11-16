@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"os"
 	"strings"
 )
 
@@ -134,17 +137,46 @@ func makePeers() map[string][]string {
 }
 
 func main() {
-	grid := []problem{
-		"003020600900305001001806400008102900700000008006708200002609500800203009005010300",
-		"600209183001000027002030040000125090009080700050974000010040300460000900725306004",
-		"006002080400700100300010050980007060000000000040200071020050007009003008010400900",
-		"4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......",
-	}
-	for _, v := range grid {
-		values, err := breadthFirstSearch(v)
-		if err != nil {
-			fmt.Println(err)
+	var grids []problem
+	scanner := bufio.NewScanner(os.Stdin)
+	var problemString string
+	for scanner.Scan() {
+		text := scanner.Text()
+		if !strings.HasPrefix(text, "Grid") {
+			problemString += text
+		} else if len(problemString) == 81 {
+			grids = append(grids, problem(problemString))
+			problemString = ""
 		}
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	for i, v := range grids {
+		values := bfs(v)
+		// values := dls(5, v)
+		fmt.Println("Grid", i)
 		printBoard(values)
 	}
+}
+
+func bfs(grid problem) nstate {
+	values, err := breadthFirstSearch(grid)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return values
+}
+
+func dls(maxlimit int, grid problem) nstate {
+	var values nstate
+	for limit := 1; limit <= maxlimit; limit++ {
+		var err error
+		values, err = depthLimitedSearch(grid, limit)
+		if err == nil {
+			break
+		}
+	}
+	return values
 }
