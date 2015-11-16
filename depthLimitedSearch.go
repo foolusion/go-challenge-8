@@ -7,11 +7,15 @@ var (
 	ErrNoSolution = errors.New("No Solution")
 )
 
-func depthLimitedSearch(p problem, limit int) (state, error) {
-	return recursiveDLS(&node{state: state(p), pathCost: 0}, p, limit)
+func depthLimitedSearch(p problem, limit int) (nstate, error) {
+	initialState, err := p.initialState()
+	if err != nil {
+		return initialState, err
+	}
+	return recursiveDLS(&node{state: initialState, pathCost: 0}, p, limit)
 }
 
-func recursiveDLS(n *node, p problem, limit int) (state, error) {
+func recursiveDLS(n *node, p problem, limit int) (nstate, error) {
 	if p.GoalTest(n.state) {
 		return n.state, nil
 	} else if limit == 0 {
@@ -19,7 +23,10 @@ func recursiveDLS(n *node, p problem, limit int) (state, error) {
 	} else {
 		cutoffOccurred := false
 		for _, action := range p.actions(n.state) {
-			child := childNode(p, n, action)
+			child, err := childNode(p, n, action)
+			if err != nil {
+				continue
+			}
 			result, err := recursiveDLS(child, p, limit-1)
 			if err == ErrCutoff {
 				cutoffOccurred = true
